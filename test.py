@@ -38,5 +38,14 @@ def get_problem_list(groupid):
     problem_response = api_request("problem.get", problem_req, api_token)
     return problem_response
 
-for i in [39,38,37,36]:
-    print(get_problem_list(i))
+objectid = "29908"
+trigger_req = {
+                "triggerids": objectid,  
+                "output": ["description"], 
+                "selectHosts": ["host", "hostid"]
+            }
+hostid_response = api_request("trigger.get", trigger_req, api_token)
+# for i in [39,38,37,36]:
+#     print(f"group {i}")
+print(get_problem_list(37))
+print(hostid_response)
