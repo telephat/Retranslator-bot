@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 import requests
 import configparser
 import json
@@ -5,6 +6,23 @@ import datetime, time
 import telebot
 import os
 from dotenv import load_dotenv
+import signal, sys, logging
+
+if os.name == "posix":
+    logfile_name = "/var/log/zabbixbot.log"
+    print("loading Linux config")
+elif os.name == "nt":
+    logfile_name = "zabbixbot.log"
+    print("loading Windows config")
+
+logging.basicConfig(filename=logfile_name, level=logging.INFO,
+                    format='%(asctime)s - %(levelname)s - %(message)s')
+
+
+def signal_handler(sig, frame):
+    logging.info("Receiving TERM signal, exiting")
+    sys.exit(0)
+
 
 load_dotenv("data.env")
 BOT_TOKEN = os.environ.get("BOT_TOKEN")
@@ -101,22 +119,10 @@ def get_problem_list(groupid):
         
 
 bot = telebot.TeleBot(BOT_TOKEN)
-#unicode symbols
-#"\U00002755" = "!"
-#🔵
-#🟢
-#🟡
-#🟠
-#🔴
-#U+1F534
 
 @bot.message_handler(commands=['start'])
 def send_welcome(message):
     bot.reply_to(message, "zabbix query bot")
-    # todisplay=""
-    # for i in range(500):
-    #     todisplay += f"Сообщение №{i}\n"
-    # bot.send_message(message.chat.id, todisplay, parse_mode="Markdown")        
 
 @bot.message_handler(commands=['getcurrentproblemsilo'])
 def send_status(message):
@@ -157,14 +163,6 @@ def echo_all(message):
     bot.reply_to(message, message.text)
 
 bot.infinity_polling()
-todisplay = ""
-for zabbix_group in [40, 39, 38, 37, 36]:
-    print(zabbix_group)
-    for host, data in get_problem_list(zabbix_group).items():
-        print(f"*{host}* \n")
-        for problem in data:
-            print(f"\t{problem[1]}    {problem[0]}")
-
 
 #группы 40, 39, 38, 37, 36
 #группа 41
