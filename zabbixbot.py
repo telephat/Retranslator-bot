@@ -9,7 +9,7 @@ from dotenv import load_dotenv
 import signal, sys, logging
 
 if os.name == "posix":
-    logfile_name = "/var/log/zabbixbot.log"
+    logfile_name = "/var/log/zabbixbot/zabbixbot.log"
     print("loading Linux config")
 elif os.name == "nt":
     logfile_name = "zabbixbot.log"
