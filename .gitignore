@@ -6,5 +6,7 @@ configtest.py
 testconfig.ini
 *_test.py
 *.log
+update.sh
+
 
 

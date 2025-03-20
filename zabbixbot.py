@@ -105,7 +105,7 @@ def get_problem_list(groupid):
             hostname = hostid_response['result'][0]['hosts'][0]['host']
             problemname = hostid_response['result'][0]['description']
             problemtime_seconds = int(each[1])
-            problemtime = seconds_to_dhm(current_time - problemtime_seconds)
+            problemtime = seconds_to_dhm(abs(current_time - problemtime_seconds))
             problemseverity = int(each[3])
             if each[2] == "0":
                 problemresolved = "X"
