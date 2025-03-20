@@ -23,6 +23,7 @@ def signal_handler(sig, frame):
     sys.exit(0)
 
 signal.signal(signal.SIGTERM, signal_handler)
+signal.signal(signal.SIGINT, signal_handler)
 
 load_dotenv("data.env")
 BOT_TOKEN = os.environ.get("BOT_TOKEN")
@@ -121,6 +122,7 @@ def get_problem_list(groupid):
         
 
 bot = telebot.TeleBot(BOT_TOKEN)
+logging.info("Bot is started")
 
 @bot.message_handler(commands=['start'])
 def send_welcome(message):
@@ -135,7 +137,7 @@ def send_status(message):
         for problem in data:
             #print(f"\t{problem[1]}    {problem[0]}")
             todisplay += f"\t{svr_s(problem[3])} {problem[1]}    {problem[0]}\n"
-        if todisplay == "": todisplay = "Query is empty"
+        if todisplay == "": todisplay = "Nothing to show"
         bot.send_message(message.chat.id, todisplay, parse_mode="Markdown")
 
 def svr_s(severity): #severity symbol
@@ -157,7 +159,7 @@ def send_status(message):
                 #print(f"\t{problem[1]}    {problem[0]}")
                 todisplay += f"\t{svr_s(problem[3])} {problem[1]}    {problem[0]}\n"
             bot.send_message(message.chat.id, todisplay, parse_mode="Markdown")
-    if todisplay == "": todisplay = "Query is empty"
+    if todisplay == "": todisplay = "Nothing to show"
     #bot.send_message(message.chat.id, todisplay, parse_mode="Markdown")
 
 @bot.message_handler(func=lambda message: True)
