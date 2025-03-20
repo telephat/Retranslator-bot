@@ -18,11 +18,11 @@ elif os.name == "nt":
 logging.basicConfig(filename=logfile_name, level=logging.INFO,
                     format='%(asctime)s - %(levelname)s - %(message)s')
 
-
 def signal_handler(sig, frame):
     logging.info("Receiving TERM signal, exiting")
     sys.exit(0)
 
+signal.signal(signal.SIGTERM, signal_handler)
 
 load_dotenv("data.env")
 BOT_TOKEN = os.environ.get("BOT_TOKEN")
@@ -49,6 +49,7 @@ def api_request(method, params, token = None):
         return response.json()
     except requests.exceptions.RequestException as e:
         print(f"Request failed: {e}")
+        logging.exception(f"Request failed: {e}")
         return None
     
 def add_problem(dict, host, data):
@@ -114,7 +115,8 @@ def get_problem_list(groupid):
         return problems_dict    
     else:
         #print(problem_response)
-        raise ValueError("Query failed")
+        logging.exception("Query fatal fail")
+        raise ValueError("Query fail")
         return problems_dict
         
 

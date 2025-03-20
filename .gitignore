@@ -4,4 +4,7 @@ test.py
 zabbixbot.ini
 configtest.py
 testconfig.ini
+*_test.py
+*.log
+
 
