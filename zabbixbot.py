@@ -159,7 +159,9 @@ def send_status(message):
                 #print(f"\t{problem[1]}    {problem[0]}")
                 todisplay += f"\t{svr_s(problem[3])} {problem[1]}    {problem[0]}\n"
             bot.send_message(message.chat.id, todisplay, parse_mode="Markdown")
-    if todisplay == "": todisplay = "Nothing to show"
+    if todisplay == "": 
+        todisplay = "Nothing to show"
+        bot.send_message(message.chat.id, todisplay, parse_mode="Markdown")
     #bot.send_message(message.chat.id, todisplay, parse_mode="Markdown")
 
 @bot.message_handler(func=lambda message: True)
