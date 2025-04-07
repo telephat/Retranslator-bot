@@ -98,12 +98,13 @@ def get_problem_list(groupid):
             objectid = each[0]
             trigger_req = {
                 "triggerids": objectid,  
-                "output": ["description"], 
+                "output": ["description", "status"], 
                 "selectHosts": ["host", "hostid"]
             }
             hostid_response = api_request("trigger.get", trigger_req, api_token)
             hostname = hostid_response['result'][0]['hosts'][0]['host']
             problemname = hostid_response['result'][0]['description']
+            problemtrigger = hostid_response['result'][0]['status']
             problemtime_seconds = int(each[1])
             problemtime = seconds_to_dhm(abs(current_time - problemtime_seconds))
             problemseverity = int(each[3])
@@ -111,7 +112,7 @@ def get_problem_list(groupid):
                 problemresolved = "X"
             else:
                 problemresolved = "Y"
-            add_problem(problems_dict, hostname, [problemname, problemtime, problemresolved, problemseverity])#added problem severity to internal DB
+            add_problem(problems_dict, hostname, [problemname, problemtime, problemresolved, problemseverity, problemtrigger])#added problem severity to internal DB
         
         return problems_dict    
     else:
@@ -128,6 +129,7 @@ logging.info("Bot is started")
 def send_welcome(message):
     bot.reply_to(message, "zabbix query bot")
 
+#ILO PROBLEMS -------------------------->
 @bot.message_handler(commands=['getcurrentproblemsilo'])
 def send_status(message):
     todisplay = ""
@@ -136,9 +138,11 @@ def send_status(message):
         todisplay += f"*{host}* \n"
         for problem in data:
             #print(f"\t{problem[1]}    {problem[0]}")
-            todisplay += f"\t{svr_s(problem[3])} {problem[1]}    {problem[0]}\n"
+            todisplay += f"\t{svr_s(problem[3])} {problem[1]}    {problem[0]}"
+            todisplay +="\n"
         if todisplay == "": todisplay = "Nothing to show"
         bot.send_message(message.chat.id, todisplay, parse_mode="Markdown")
+#ILO PROBLEMS --------------------------<
 
 def svr_s(severity): #severity symbol
     '''returns symbol associated to severity'''
@@ -147,6 +151,8 @@ def svr_s(severity): #severity symbol
     
     return symbols[severity]
 
+
+#AGENT PROBLEMS
 @bot.message_handler(commands=['agent_problems'])
 def send_status(message):
     problems = {}
@@ -157,7 +163,12 @@ def send_status(message):
             todisplay += f"*{host}* \n"
             for problem in data:
                 #print(f"\t{problem[1]}    {problem[0]}")
-                todisplay += f"\t{svr_s(problem[3])} {problem[1]}    {problem[0]}\n"
+                if problem[4] == "1":
+                    todisplay += "\t⚫️"
+                else:
+                    todisplay += f"\t{svr_s(problem[3])}"
+                todisplay += f"{problem[1]}    {problem[0]}"
+                todisplay += "\n"
             bot.send_message(message.chat.id, todisplay, parse_mode="Markdown")
     if todisplay == "": 
         todisplay = "Nothing to show"
@@ -168,6 +179,8 @@ def send_status(message):
 def echo_all(message):
     bot.reply_to(message, message.text)
 
+# for host, data in get_problem_list(36).items():
+#     print(f"data: {data[4]}")
 bot.infinity_polling()
 
 #группы 40, 39, 38, 37, 36
