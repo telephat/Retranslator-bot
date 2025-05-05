@@ -75,6 +75,7 @@ def seconds_to_dhm(seconds):
     return result
 
 def get_problem_list(groupid):
+    current_time = round(time.time())
     objectid = "0"
     problems_list = []
     problems_dict = {}
